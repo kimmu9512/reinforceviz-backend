@@ -191,17 +191,23 @@ This `state_sequences` object shows the path taken by the agent in each episode.
 - **URL**: `/api/value-iteration/run-agent`
 - **Method**: `POST`
 - **Data Params**:
-  {
+
+```json
+{
   "x": 4,
   "y": 3,
-  "Terminal": [[3, 2, 1], [3, 1, -1]],
+  "Terminal": [
+    [3, 2, 1],
+    [3, 1, -1]
+  ],
   "Boulder": [[1, 1]],
   "RobotStartState": [0, 0],
   "K": 25,
   "Discount": 0.9,
   "Noise": 0.2,
   "TransitionCost": 0.0
-  }
+}
+```
 
 - **Success Response**:
   - **Code**: 200
