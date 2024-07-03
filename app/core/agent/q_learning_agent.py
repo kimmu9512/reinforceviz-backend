@@ -4,7 +4,7 @@ from app.core.enums import AgentType, QueryType
 from app.core.agent.query_answering_agent import QueryAnsweringAgent
 from app.core.agent.query import Query
 from app.core.agent.q_learning_state import QLearningState
-
+import copy
 class QLearningAgent(QueryAnsweringAgent):
     """
     QLearningAgent Class
@@ -41,9 +41,13 @@ class QLearningAgent(QueryAnsweringAgent):
         """
         actions = self.grid.get_actions_from_state(state)
         random.shuffle(actions)
-
-        max_q_value = max((self.q_values[state].get_q_value(action) for action in actions), default=0)
-        best_action = max(actions, key=lambda action: self.q_values[state].get_q_value(action))
+        max_q_value = float('-inf')
+        best_action = None
+        for action in actions:
+            q_value = self.q_values[state].get_q_value(action)
+            if q_value > max_q_value:
+                max_q_value = q_value
+                best_action = action
         return max_q_value, best_action
 
     def receive_sample(self, state, action, new_state, reward):
@@ -82,8 +86,8 @@ class QLearningAgent(QueryAnsweringAgent):
         Runs Q learning algorithm 
         """
         self.initialize_q_values()
-        self.iterations[0] = self.q_values
         self.state_sequences[0] = []
+        self.iterations[0] =copy.deepcopy( self.q_values)
         for e in range(self.grid.q_value_episodes):
             state = self.grid.robot_start_state
             state_sequence = [state]
@@ -100,25 +104,20 @@ class QLearningAgent(QueryAnsweringAgent):
                 if state is not None:
                     state_sequence.append(state)
             self.state_sequences[e + 1] = state_sequence
-            self.iterations[e + 1] = self.q_values
+            self.iterations[e + 1] =copy.deepcopy( self.q_values)
     def get_iterations(self):
-        json_iterations = {
-            'q_values': {
-                step: {
-                    f"{state.x},{state.y}": value.to_dict()
-                    for state, value in q_values.items()
-                }
-                for step, q_values in self.iterations.items()
-            },
-            'state_sequences': {
-                step: [
-                    f"{state.x},{state.y}"
-                    for state in state_sequence
-                ]
-                for step, state_sequence in self.state_sequences.items()
+        json_iterations = {}
+        for episode, q_values in self.iterations.items():
+            
+            json_iterations[episode] = {
+                "q_values": {
+                    f"{state.x},{state.y}": action_q_values.to_dict()
+                    for state, action_q_values in q_values.items()
+                },
+                "sequences": [f"{state.x},{state.y}" for state in self.state_sequences[episode]]
             }
-        }
         return json_iterations
+
     def get_agent_type(self) -> AgentType:
         """
         Returns the AgentType of the object
