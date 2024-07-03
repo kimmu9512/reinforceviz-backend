@@ -86,7 +86,7 @@ class QLearningAgent(QueryAnsweringAgent):
         Runs Q learning algorithm 
         """
         self.initialize_q_values()
-        self.state_sequences[0] = []
+        self.state_sequences[-1] = []
         self.iterations[0] =copy.deepcopy( self.q_values)
         for e in range(self.grid.q_value_episodes):
             state = self.grid.robot_start_state
@@ -103,7 +103,7 @@ class QLearningAgent(QueryAnsweringAgent):
                 state = new_state
                 if state is not None:
                     state_sequence.append(state)
-            self.state_sequences[e + 1] = state_sequence
+            self.state_sequences[e] = state_sequence
             self.iterations[e + 1] =copy.deepcopy( self.q_values)
     def get_iterations(self):
         json_iterations = {}
