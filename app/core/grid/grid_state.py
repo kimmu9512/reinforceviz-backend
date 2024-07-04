@@ -13,7 +13,7 @@ class GridState:
         """
         Overriding str function to be used by the internal hash function
         """
-        return str(self.x) +" , "+ str(self.y)
+        return str(self.x) +","+ str(self.y)
 
     def __hash__(self):
         """

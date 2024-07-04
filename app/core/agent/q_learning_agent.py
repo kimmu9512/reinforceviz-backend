@@ -90,7 +90,7 @@ class QLearningAgent(QueryAnsweringAgent):
         self.iterations[0] =copy.deepcopy( self.q_values)
         for e in range(self.grid.q_value_episodes):
             state = self.grid.robot_start_state
-            state_sequence = [state]
+            state_sequence = [str(state)]
             while state is not None:
                 exploration = random.random()
                 if exploration < self.epsilon:
@@ -102,7 +102,7 @@ class QLearningAgent(QueryAnsweringAgent):
                 self.receive_sample(state, action, new_state, reward)
                 state = new_state
                 if state is not None:
-                    state_sequence.append(state)
+                    state_sequence.append(str(state))
             self.state_sequences[e+1] = state_sequence
             self.iterations[e + 1] =copy.deepcopy( self.q_values)
     def get_iterations(self):
@@ -114,7 +114,7 @@ class QLearningAgent(QueryAnsweringAgent):
                     f"{state.x},{state.y}": action_q_values.to_dict()
                     for state, action_q_values in q_values.items()
                 },
-                "sequences": [f"{state.x},{state.y}" for state in self.state_sequences[episode]]
+                "sequences": self.state_sequences[episode]
             }
         return json_iterations
 
