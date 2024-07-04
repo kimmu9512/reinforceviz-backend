@@ -103,7 +103,7 @@ class QLearningAgent(QueryAnsweringAgent):
                 state = new_state
                 if state is not None:
                     state_sequence.append(state)
-            self.state_sequences[e] = state_sequence
+            self.state_sequences[e+1] = state_sequence
             self.iterations[e + 1] =copy.deepcopy( self.q_values)
     def get_iterations(self):
         json_iterations = {}
